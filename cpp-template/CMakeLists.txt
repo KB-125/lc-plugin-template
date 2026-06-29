@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.29)
 project(cpp_template)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 # 收集公共代码
 file(GLOB_RECURSE COMMON_SOURCES "leetcode/editor/common/*.cpp")
