@@ -37,6 +37,8 @@ build/
 ### CPP ###
 cmake-build-debug
 build
+###clangd###
+.cache
 
 ### LeetCode Plugin ###
 *.md
