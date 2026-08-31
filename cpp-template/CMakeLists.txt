@@ -3,6 +3,12 @@ project(cpp_template)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# 题目文件为 UTF-8（无 BOM，由插件生成，含中文注释）。
+# MSVC 默认按系统代码页(936/GBK)读取源文件会报 C4819，显式指定源码/执行字符集为 UTF-8
+if(MSVC)
+    add_compile_options(/utf-8)
+endif()
+
 # 让 IDE（VS 解决方案资源管理器 / CMake Tools 面板）按 FOLDER 属性分组显示 target
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
