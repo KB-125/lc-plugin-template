@@ -43,3 +43,4 @@ build
 ### LeetCode Plugin ###
 *.md
 *.json
+!CMakePresets.json
