@@ -9,8 +9,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "../common/ListNode.cpp"
-#include "../common/TreeNode.cpp"
+#include "../../common/ListNode.cpp"
+#include "../../common/TreeNode.cpp"
 
 using namespace std;
 
