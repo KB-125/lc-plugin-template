@@ -22,7 +22,8 @@ set_target_properties(common PROPERTIES FOLDER "common")
 # 目录约定（由 LeetCode 插件的 labuladong-leetcode.filePath 配置生成）：
 #   leetcode/editor/cn/<题型tag>/<题号>.<难度>.<题名slug>.cpp
 #   例: leetcode/editor/cn/hash-table/1.easy.two-sum.cpp
-# target 命名: cn_<tag>_<难度>_<题号>_<slug>，例: cn_hash-table_easy_1_two-sum
+# target 命名: cn_<难度>_<题号>_<slug>，例: cn_easy_1_two-sum
+# （题型不再编入 target 名 —— 由 FOLDER 分组 leetcode/cn/<tag> 体现，且更省路径预算）
 #
 # Windows 下对象文件全路径有 250 字符上限：
 #   build/CMakeFiles/<target>.dir/./ + <源文件相对路径>.obj
@@ -77,13 +78,13 @@ foreach(source_file IN LISTS MAIN_SOURCES)
         list(GET toks 1 diff)
         list(REMOVE_AT toks 0 1)
         string(JOIN "." slug ${toks})
-        set(base "cn_${tag}_${diff}_${qid}")
+        set(base "cn_${diff}_${qid}")
     elseif(ntoks EQUAL 2)
         list(GET toks 0 qid)
         list(GET toks 1 slug)
-        set(base "cn_${tag}_${qid}")
+        set(base "cn_${qid}")
     else()
-        set(base "cn_${tag}")
+        set(base "cn")
         set(slug "${fname}")
     endif()
 
