@@ -14,7 +14,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # ---------- 公共代码 -> 静态库 ----------
 # CONFIGURE_DEPENDS: 插件新下载/新建的题目文件无需手动重新 configure，build 时自动重新扫描
-file(GLOB_RECURSE COMMON_SOURCES CONFIGURE_DEPENDS "leetcode/editor/common/*.cpp")
+file(GLOB_RECURSE COMMON_SOURCES CONFIGURE_DEPENDS "leetcode/editor/common/*")
 add_library(common STATIC ${COMMON_SOURCES})
 set_target_properties(common PROPERTIES FOLDER "common")
 
