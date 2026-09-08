@@ -7,7 +7,9 @@ private:
     std::list<E> list;
 
 public:
-    void push(const E& e) { list.push_back(e); }
+    void push(const E& e) {
+        list.push_back(e);
+    }
 
     E pop() {
         E front = list.front();
@@ -15,9 +17,13 @@ public:
         return front;
     }
 
-    E peek() { return list.front(); }
+    E peek() {
+        return list.front();
+    }
 
-    size_t size() { return list.size(); }
+    size_t size() {
+        return list.size();
+    }
 };
 
 template <typename E>
@@ -26,13 +32,23 @@ private:
     CircleArray<E> arr;
 
 public:
-    ArrayQueue() { arr = CircleArray<E>(); }
+    ArrayQueue() {
+        arr = CircleArray<E>();
+    }
 
-    void push(E t) { arr.addLast(t); }
+    void push(E t) {
+        arr.addLast(t);
+    }
 
-    E pop() { return arr.removeForward(); }
+    E pop() {
+        return arr.removeForward();
+    }
 
-    E peek() { return arr.getForward(); }
+    E peek() {
+        return arr.getForward();
+    }
 
-    int size() { return arr.size(); }
+    int size() {
+        return arr.size();
+    }
 };

@@ -1,55 +1,524 @@
-# ============================================================
-#  LeetCode C++ 刷题工程格式化配置
-#  基于 Google 风格，按现代 C++ 编码标准调整
+# =====================================================================================
+#  clang-format 全参数学习版配置（针对 C++，clang-format 22.x）
+# =====================================================================================
+#  基线：Google 风格 + 本工程定制（4 空格缩进 / 120 列 / 非空函数强制分行等）
+#  本文件显式给出 clang-format 22 的【全部 179 个 Cpp 顶级参数】及嵌套子项，
+#  并附带 BasedOnStyle——第 180 个"元参数"（见 §0）：即使日后某参数被误删，
+#  也只会回落到 Google 官方风格值，而不会 fallback 到 LLVM 风格或报错。
 #
-#  注意：本文件是 YAML 格式，注释必须用 "#"；
-#  不能用 "//"（会被当作值的一部分导致 Unknown value / invalid argument）
-# ============================================================
+#  学习方法：
+#    * 每个 "#" 后为注释（YAML 只认 #，不认 //）
+#    * 标注 [vN] = 该参数自 clang-format N 版本起存在；老版本 clang-format 会报
+#      unknown key，属正常现象
+#    * 修改后用  clang-format --style=file --dump-config  查看解析结果，
+#      用  clang-format --style=file xx.cpp  实际格式化验证
+#    * 官方文档：https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# =====================================================================================
 
-# ---- 基础 ----
-Language: Cpp
-BasedOnStyle: Google
-Standard: c++20
 
-# ---- 缩进与列宽 ----
-ColumnLimit: 120             # 列宽（Google 默认 80）
-IndentWidth: 4               # 缩进长度（Google 默认 2）
-TabWidth: 4
-UseTab: Never
-AccessModifierOffset: -4     # public:/private: 反缩进到类边界
+# -------------------------------------------------------------------------------------
+# §0 基础风格 [元参数——第 180 个，解析期生效]
+# -------------------------------------------------------------------------------------
+# BasedOnStyle 是特殊的"元参数"：解析时先整体展开为某内置风格，再让本文件中
+# 显式给出的参数逐项覆盖它。★它只存在于配置文件/-style='{...}' 中，
+#   不会出现在 --dump-config 输出里，也没有版本徽章（内置风格随版本演进）。
+# 学习技巧：clang-format --style=Google --dump-config 可查看任一内置风格的全量展开。
+BasedOnStyle: Google   # 为"未显式配置的参数"提供基线。可选值：
+                       #   LLVM                LLVM 编码规范（clang-format 默认风格，缩进 2 / 列宽 80）
+                       #   Google              Google C++ 规范（缩进 2 / 列宽 80 / 指针靠左）
+                       #   Chromium            Chromium 规范（基于 Google，改 4 空格缩进）
+                       #   Mozilla             Mozilla 规范
+                       #   WebKit              WebKit 规范
+                       #   Microsoft           Microsoft / Visual Studio 规范
+                       #   GNU                 GNU 编码规范（大括号独占行）
+                       #   InheritParentConfig 非真实风格：继承上级目录的 .clang-format，
+                       #                       用于子目录仅覆写少量参数的场景；找不到父文件
+                       #                       时回退 fallback 风格。命令行可用：
+                       #                       --style='{BasedOnStyle: InheritParentConfig, ColumnLimit: 20}'
+                       # 惯例写在配置最前；本文件 179 个参数已全部显式给出，
+                       # 它仅在参数被误删时兜底（--dump-config diff 可验证零影响）。
 
-# ---- 大括号与换行 ----
-BreakBeforeBraces: Attach    # 大括号不换行（K&R 风格）
-AllowShortIfStatementsOnASingleLine: WithoutElse  # 单行 if 不换行（带 else 的不合并）
-AllowShortLoopsOnASingleLine: true                 # 单行循环体不换行
-AllowShortFunctionsOnASingleLine: Inline           # 类内函数可单行，类外展开
-AllowShortLambdasOnASingleLine: Inline             # 空的/内联 lambda 可单行
-AllowShortCaseLabelsOnASingleLine: true            # 单行 case
-AllowShortBlocksOnASingleLine: Empty               # 仅空代码块可单行 {}
-IndentCaseLabels: true       # switch 内 case 缩进（Google 默认不缩进）
-IndentCaseBlocks: false      # case 体不再额外缩进一层
-NamespaceIndentation: None   # 命名空间内容不缩进
-FixNamespaceComments: true   # 自动补齐 namespace 结尾注释
-CompactNamespaces: false
-InsertBraces: false          # 如需强制单行控制体加大括号请置 true，
-                             # 但必须同时关闭上面的 AllowShortIfStatementsOnASingleLine（二者互斥）
 
-# ---- 指针与对齐 ----
-PointerAlignment: Left       # 指针/引用 * & 靠左（int* p）
-DerivePointerAlignment: false  # 必须关闭，否则会从文件内容猜测、覆盖上面的设置
-AlignAfterOpenBracket: Align # 换行参数与开括号对齐
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: false
-AlignTrailingComments: true  # 尾注释对齐
+# -------------------------------------------------------------------------------------
+# §1 全局与基础 [基础排版总开关]
+# -------------------------------------------------------------------------------------
+Language: Cpp                  # 本段配置适用的语言（还有 CSharp/Java/JavaScript/JSON/ObjC/Proto/TableGen/Verilog/YAML 等，各语言段各自独立）
+DisableFormat: false           # 总开关：true 时对该语言完全不做格式化
+Standard: c++20                # 依据的 C++ 标准（c++03/c++11/c++14/c++17/c++20/c++23/Latest），影响 C++11 后语法的解析（如 >> 嵌套模板、C++20 requires 等）
 
-# ---- include 与定义 ----
-SortIncludes: CaseSensitive  # 现代标准推荐排序；如不想排序可改回 Never
-IncludeBlocks: Preserve      # 不合并/重排以空行分块的 include
-SeparateDefinitionBlocks: Always   # 函数/类定义之间保留空行
+ColumnLimit: 120               # 列宽上限；超出时按惩罚模型折行。0 = 不限宽（本工程选 120）
+TabWidth: 4                    # 制表符按几列宽解释
+UseTab: Never                  # 何时用 Tab 缩进：Never 永不 / ForIndentation 仅缩进 / ForContinuationAndIndentation 缩进+续行 / Always 全部
+IndentWidth: 4                 # 缩进宽度（Google 默认 2，本工程改 4）
+PPIndentWidth: -1              # 预处理指令(#if/#define)的缩进宽度；-1 = 沿用 IndentWidth
+ContinuationIndentWidth: 4     # 续行（换行后的表达式）相对的额外缩进
+AccessModifierOffset: -4       # public:/private:/protected: 相对类体的反缩进；-4 使其顶到行首
 
-# ---- 杂项 ----
-MaxEmptyLinesToKeep: 1
-ReflowComments: true
-KeepEmptyLinesAtTheStartOfBlocks: false
-SpaceBeforeParens: ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
+LineEnding: DeriveLF           # 行尾符：LF / CRLF / DeriveLF(跟随文件首个行尾，默认按 LF) / DeriveCRLF
+InsertNewlineAtEOF: false      # 是否保证文件末尾有换行符（POSIX 惯例为 true，这里保持关闭）
+KeepFormFeed: false            # 是否保留罕见换页符 \f
+OneLineFormatOffRegex: ''      # [v21] 正则：匹配到的独占一行注释，使其下一行跳过格式化（如 // NOLINT 类局部豁免）
+
+
+# -------------------------------------------------------------------------------------
+# §2 缩进细则
+# -------------------------------------------------------------------------------------
+IndentCaseLabels: true         # switch 里 case/default 相对 switch 缩进一层（Google 默认 false，本工程开启）
+IndentCaseBlocks: false        # case 下的花括号代码块是否再额外缩进一层（true 时 case 里的 { } 内容再深一层）
+IndentGotoLabels: true         # goto 标签（label:）是否缩进；false 则顶行
+IndentRequiresClause: true     # C++20 requires 子句（template <T> foo requires ...）是否缩进
+IndentAccessModifiers: false   # true 时 public: 等访问修饰符本身也缩进进类体（Google 不缩进）
+IndentExportBlock: true        # C++20 模块 export { ... } 块体是否缩进
+IndentExternBlock: AfterExternBlock  # extern "C" 块体缩进：AfterExternBlock 跟随 Braces 设置 / Indent / NoIndent
+IndentPPDirectives: None       # 预处理条件嵌套缩进：None 不缩 / AfterHash # 后多缩一格(#  if) / BeforeHash / Leave
+IndentWrappedFunctionNames: false  # 函数名按 Google 风格被换行包裹时（跨行函数名）是否缩进
+
+BracedInitializerIndentWidth: -1  # 花括号初始化列表 { } 的缩进宽度；-1 = 用 ContinuationIndentWidth
+
+LambdaBodyIndentation: Signature   # lambda 体缩进基准：Signature 相对 lambda 起始缩进 / OuterScope 相对外层作用域
+RequiresExpressionIndentation: OuterScope  # C++20 requires 表达式体缩进：OuterScope / InnerScope
+
+NamespaceIndentation: None     # namespace 块体：None 不缩进 / Inner 仅内层 namespace 缩进 / All 全部缩进
+ShortNamespaceLines: 1         # 超过多少“内容行”才算"长 namespace"（配合 AllowShortNamespacesOnASingleLine / 尾注释判断）
+CompactNamespaces: false       # true 时允许 `namespace a { namespace b { ... } }` 压缩成一行开合
+FixNamespaceComments: true     # 自动补齐/修正 namespace 结尾注释 `} // namespace xxx`
+WrapNamespaceBodyWithEmptyLines: Leave  # namespace 体首尾是否强制空行包裹：Never / Always / Leave
+
+
+# -------------------------------------------------------------------------------------
+# §3 指针、引用、类型限定符
+# -------------------------------------------------------------------------------------
+PointerAlignment: Left         # 指针* / 引用& 靠哪边：Left `int* p` / Right `int *p` / Middle `int * p`
+DerivePointerAlignment: false  # true 时从每个文件现有代码猜测指针风格（会覆盖上面设置！Google 默认 true，务必关闭）
+ReferenceAlignment: Pointer    # 引用& 的对齐：Pointer 跟随指针设置 / Left / Right / Middle 单独指定
+
+QualifierAlignment: Leave      # const/volatile/static 限定符位置重排：Leave 不动（其他值有改变语义风险，慎用）
+SpaceAroundPointerQualifiers: Default  # 指针限定符周围空格（int* const p 的 * 与 const 间）：Default 跟随 / Before / After / Both
+
+BitFieldColonSpacing: Both     # 位域冒号两侧空格 `int b : 3`：Both / None / Before / After
+
+
+# -------------------------------------------------------------------------------------
+# §4 括号后对齐与续行 [AlignAfterOpenBracket 家族]
+# -------------------------------------------------------------------------------------
+# 注意：clang-format 22 起 AlignAfterOpenBracket 是 Boolean：
+#   true  = 对齐开括号后参数（旧值 Align）
+#   false = 不对齐（旧值 DontAlign）
+#   旧值 AlwaysBreak/BlockIndent 的功能已拆到下面 BreakAfterOpenBracket*/BreakBeforeCloseBracket* 系列
+AlignAfterOpenBracket: true    # 换行后参数与开括号对齐：foo(aaaa,   \n            bbbb)
+BreakAfterOpenBracketFunction: false    # [v22] 函数调用括号后是否强制换行（BlockIndent 风格）
+BreakAfterOpenBracketIf: false          # [v22] if( 括号后是否强制换行
+BreakAfterOpenBracketLoop: false        # [v22] for/while( 括号后是否强制换行
+BreakAfterOpenBracketSwitch: false      # [v22] switch( 括号后是否强制换行
+BreakAfterOpenBracketBracedList: false  # [v22] 初始化列表 { 前的括号后是否强制换行
+BreakBeforeCloseBracketFunction: false  # [v22] 函数调用闭括号 ) 是否单独成行
+BreakBeforeCloseBracketIf: false        # [v22] if 的 ) 是否单独成行
+BreakBeforeCloseBracketLoop: false      # [v22] for/while 的 ) 是否单独成行
+BreakBeforeCloseBracketSwitch: false    # [v22] switch 的 ) 是否单独成行
+BreakBeforeCloseBracketBracedList: false # [v22] 初始化列表 ] }) 是否单独成行
+
+AlignArrayOfStructures: None   # 结构体数组初始化按列对齐：None / Left / Right（如 { {1,2}, {3,4} } 各列对齐）
+AlignOperands: Align           # 跨行二元表达式操作数对齐：Align 与首操作数对齐 / AlignAfterOperator 跟在运算符后 / DontAlign
+AlignEscapedNewlines: Left     # 宏定义续行反斜杠 \ 的对齐：Left 尽量靠左 / LeftWithLastLine / Right 尽量靠右 / DontAlign
+
+# —— 连续行对齐系列（下列默认全 false：不强求竖向对齐，避免高频 rebase 冲突）——
+# Enabled:          是否启用
+# AcrossEmptyLines: 对齐是否跨越空行延续
+# AcrossComments:   对齐是否跨越注释行延续
+# AlignCompound:    复合赋值(+= 等)与普通 = 是否一起对齐
+# AlignFunctionDeclarations: 连续函数声明是否参与对齐
+# AlignFunctionPointers:     函数指针变量是否参与对齐
+# PadOperators:     对齐时是否给运算符补空格
+AlignConsecutiveAssignments:   # 连续赋值行的 = 竖向对齐
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+AlignConsecutiveBitFields:    # 连续位域声明的冒号竖向对齐
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+AlignConsecutiveDeclarations: # 连续变量声明的名字竖向对齐
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+AlignConsecutiveMacros:       # 连续宏定义的值竖向对齐
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+AlignConsecutiveShortCaseStatements:  # 单行 case 体的竖向对齐
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCaseArrows: false      # `->`（C++23 switch 表达式箭头）参与对齐
+  AlignCaseColons: false      # case 冒号参与对齐
+# —— TableGen 语言专用对齐（与 C++ 无关，保留默认）——
+AlignConsecutiveTableGenBreakingDAGArgColons:
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+AlignConsecutiveTableGenCondOperatorColons:
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+AlignConsecutiveTableGenDefinitionColons:
+  Enabled: false
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: false
+
+AlignTrailingComments:        # 行尾 // 注释对齐策略
+  AlignPPAndNotPP: true       # 预处理指令行与非指令行的尾注释是否统一对齐
+  Kind: Always                # Leave 保持原样 / Always 对齐（本工程取值）/ Never 不对齐但仍做其他排版
+  OverEmptyLines: 0           # 尾注释对齐跨过多少空行仍延续
+
+
+# -------------------------------------------------------------------------------------
+# §5 单行合写（哪些结构允许压在一行）
+# -------------------------------------------------------------------------------------
+# ★ 本工程核心定制：为了能在任意语句上打断点/单步调试，
+#   函数体非空一律分行（Empty），if/loop 仍允许单行（可按需改保守值）。
+AllowShortFunctionsOnASingleLine: Empty       # 函数体合写：None 一律分行 / Empty 仅空 {} 可单行（本工程）/ Inline 类内可单行 / All 全部可单行
+AllowShortLambdasOnASingleLine: Inline        # lambda：None / Empty / Inline(仅在能推断为单参内联处) / All；若 lambda 内也要打断点改 None
+AllowShortIfStatementsOnASingleLine: WithoutElse  # if 合写：Never / WithoutElse 无 else 可单行 / OnlyFirst / OnlyFirstIf / AllIfsAndElse（连 else 一起压）
+AllowShortLoopsOnASingleLine: true            # while/for 单行体可合写 `while (x) y++;`；若想循环体也强制分行改 false
+AllowShortBlocksOnASingleLine: Empty          # 裸代码块 { }：Never / Empty 仅空块 / Always；与函数体独立生效
+AllowShortCaseLabelsOnASingleLine: true       # `case 1: return 0;` 可单行
+AllowShortCaseExpressionOnASingleLine: true   # C++23 switch 表达式的 case 可单行
+AllowShortCompoundRequirementOnASingleLine: true  # C++20 requires 中的复合要求 compound requirement 可单行
+AllowShortEnumsOnASingleLine: true            # enum { a, b } 可单行（false 则强制展开）
+AllowShortNamespacesOnASingleLine: false      # [v20] `namespace a { class b; }` 可单行（仅限 ShortNamespaceLines 内的小体）
+
+AllowAllArgumentsOnNextLine: true             # 调用实参可全部挤到下一行（BinPack 换行形态）
+AllowAllParametersOfDeclarationOnNextLine: true  # 声明形参可全部挤到下一行
+AllowBreakBeforeNoexceptSpecifier: Never      # [v18] noexcept 何时可换行前置：Never / OnlyWithParen / Always
+AllowBreakBeforeQtProperty: false             # [v22] Qt 的 Q_PROPERTY 宏是否允许换行
+
+ExperimentalAutoDetectBinPacking: false       # [实验性] 自动从代码猜测 BinPack 风格（与显式设置冲突，勿开）
+
+
+# -------------------------------------------------------------------------------------
+# §6 断行策略（哪里允许/强制断行）
+# -------------------------------------------------------------------------------------
+BreakStringLiterals: true             # 超宽字符串字面量允许折行拼接
+BreakAdjacentStringLiterals: true     # 相邻字符串字面量（隐式拼接）允许折行
+BreakBeforeTernaryOperators: true     # 三元 ?: 断行时 ? 在新行行首（false 则 : 在行首风格）
+BreakBeforeBinaryOperators: None      # 二元运算符断行位置：None 运算符留行尾(a +\n b) / NonAssignment 赋值类留行尾其余前置 / All 运算符前置(\n a + b)
+BreakBinaryOperations: Never          # [v20] 二元运算链整体断行策略：Never / OnePerLine 每个运算一行 / RespectPrecedence 按优先级分层
+BreakBeforeInlineASMColon: OnlyMultiline  # 内联汇编冒号断行：Never / OnlyMultiline 仅多行 asm / Always
+
+BreakAfterAttributes: Leave           # C++11/23 属性 [[maybe_unused]] 之后是否强制换行：Leave / Always / Never
+BreakAfterReturnType: None            # 返回类型与函数名之间强制断行：None / Automatic / ExceptShortType / All / TopLevel / AllDefinitions / TopLevelDefinitions
+AlwaysBreakAfterDefinitionReturnType: None  # [已废弃，被 BreakAfterReturnType 取代] 函数定义的返回类型断行：None / All / TopLevel
+BreakTemplateDeclarations: Yes        # [v19] template<...> 声明后强制换行：Leave / No / MultiLine(仅当函数体多行) / Yes（Google 取 Yes）
+BreakBeforeTemplateCloser: false      # [v21] 模板实参列表收括号 `>>` 前是否强制换行
+AlwaysBreakBeforeMultilineStrings: true   # 多行字符串前强制断行（Google 风格）
+
+BreakFunctionDefinitionParameters: false  # 函数定义的形参是否强制全部换行排版
+
+BinPackArguments: true                # 实参装箱：装不下时尽量多塞一行（true）还是每行只放一个（false）
+BinPackParameters: BinPack            # [v22 枚举化] 形参装箱：BinPack / OnePerLine(能放下则单行，否则每行一个) / AlwaysOnePerLine
+BinPackLongBracedList: true           # 超长初始化列表是否装箱（true 时先尝试装箱，配合 BinPackArguments）
+
+
+# -------------------------------------------------------------------------------------
+# §7 大括号风格
+# -------------------------------------------------------------------------------------
+BreakBeforeBraces: Attach     # 大括号风格：Attach 跟随语句(本工程,K&R) / Linux / Mozilla / Stroustrup / Allman 独立成行 / Whitesmiths / GNU / WebKit / Custom(用下面 BraceWrapping)
+BraceWrapping:                # 逐项控制（仅 BreakBeforeBraces: Custom 时完全生效；此处预置与 Attach 一致，便于切换学习）
+  AfterCaseLabel: false       # case 后的 {
+  AfterClass: false           # class 声明
+  AfterControlStatement: Never  # if/for/while/switch：Never / MultiLine(仅语句超宽) / All
+  AfterEnum: false            # enum
+  AfterExternBlock: false     # extern "C" { 之前的 {
+  AfterFunction: false        # 函数
+  AfterNamespace: false       # namespace
+  AfterObjCDeclaration: false # ObjC 声明（@interface 等）
+  AfterStruct: false          # struct
+  AfterUnion: false           # union
+  BeforeCatch: false          # } else 风格的 catch（true 则 } 后换行 catch）
+  BeforeElse: false           # } else 的 else（true 则 Allman 式）
+  BeforeLambdaBody: false     # 多行 lambda 体 {
+  BeforeWhile: false          # do-while 的 while
+  IndentBraces: false         # 大括号本身是否缩进（Whitesmiths 风格用）
+  SplitEmptyFunction: true    # 空函数 {} 是否允许拆成 { \n }
+  SplitEmptyRecord: true      # 空 class/struct/union {} 是否允许拆开
+  SplitEmptyNamespace: true   # 空 namespace {} 是否允许拆开
+
+
+# -------------------------------------------------------------------------------------
+# §8 构造函数初始化列表 / 继承列表 / 概念与 requires
+# -------------------------------------------------------------------------------------
+BreakConstructorInitializers: BeforeColon  # 构造函数初始化列表断行样式：BeforeColon(: 在新行首) / BeforeComma / AfterColon / AfterComma
+PackConstructorInitializers: NextLine      # 初始化列表打包：Never / BinPack / CurrentLine / NextLine(全放下才单行，否则每项一行,Google) / NextLineOnly
+ConstructorInitializerIndentWidth: 4       # 初始化列表项缩进宽度
+
+BreakInheritanceList: BeforeColon          # 基类列表断行样式：BeforeColon / BeforeComma / AfterColon / AfterComma
+BreakBeforeConceptDeclarations: Always     # C++20 概念声明 template<...> concept C = ... 断行：Never / Allowed / Always
+
+RequiresClausePosition: OwnLine            # requires 子句位置：OwnLine 单独一行 / OwnLineWithBrace / WithPreceding 跟前一行 / WithFollowing / SingleLine
+
+
+# -------------------------------------------------------------------------------------
+# §9 花括号/括号智能增删 [谨慎区]
+# =====================================================================================
+# 注：以下选项会在语义层面改动代码结构，官方标注“可能因缺乏完整语义信息而改错代码”，
+#     启用后务必 review diff。本工程默认全部关闭。
+# -------------------------------------------------------------------------------------
+InsertBraces: false        # [v15] 单行控制体自动补 {}。★与 AllowShortIfStatementsOnASingleLine 互斥，二者只能开一个
+RemoveBracesLLVM: false    # [v15] LLVM 风格：单行控制体若无控制流改变风险则去 {}
+RemoveParentheses: Leave   # [v19] 多余括号删除：Leave / MultipleParentheses / ReturnStatement
+RemoveSemicolon: false     # [v16] 删除类/函数定义后的多余分号
+
+
+# -------------------------------------------------------------------------------------
+# §10 空格控制
+# -------------------------------------------------------------------------------------
+SpaceBeforeParens: ControlStatements   # 括号前空格：Never / ControlStatements 仅 if/for/while 等 / ControlStatementsExceptControlMacros / NonEmptyParentheses / Always / Custom(用 SpaceBeforeParensOptions)
+SpaceBeforeParensOptions:              # 细粒度控制（仅上一项为 Custom 时生效）
+  AfterControlStatements: true         # if/for/while(
+  AfterForeachMacros: true             # foreach( 类宏
+  AfterFunctionDefinitionName: false   # 函数定义名 (
+  AfterFunctionDeclarationName: false  # 函数声明名 (
+  AfterIfMacros: true                  # KJ_IF_MAYBE( 类宏
+  AfterNot: false                      # !(
+  AfterOverloadedOperator: false       # operator()(
+  AfterPlacementOperator: true         # new/delete( 换成 operator new( 的放置形式
+  AfterRequiresInClause: false         # requires (
+  AfterRequiresInExpression: false     # requires 表达式 (
+  BeforeNonEmptyParentheses: false     # 非空括号前统一加空格
+
+SpaceBeforeRangeBasedForLoopColon: true   # for (auto x : v) 冒号前空格
+SpaceBeforeCaseColon: false               # case x: 冒号前空格
+SpaceBeforeAssignmentOperators: true      # a = b 的 = 两侧空格
+SpaceBeforeCtorInitializerColon: true     # 构造初始化列表 : 前空格
+SpaceBeforeInheritanceColon: true         # 继承列表 : 前空格
+SpaceBeforeSquareBrackets: false          # 数组声明 int a [] 中 [ 前空格（false）
+SpaceBeforeCpp11BracedList: false         # C++11 列表 Foo {1,2} 中 { 前空格
+
+SpaceAfterCStyleCast: false        # C 风格强转 (int)x 括号后空格
+SpaceAfterLogicalNot: false        # !x 的 ! 后空格
+SpaceAfterOperatorKeyword: false   # operator+ 声明中 operator 后空格
+SpaceAfterTemplateKeyword: true    # template< 中 template 后空格
+
+SpacesInAngles: Never              # 模板尖括号内空格 `vector< int >`：Never / Always / Leave
+SpacesInSquareBrackets: false      # 方括号内空格 `a[ i ]`
+SpacesInParens: Never              # 圆括号内空格：Never / Always / Custom(用 SpacesInParensOptions)
+SpacesInParensOptions:             # 细粒度（仅 Custom 时生效）
+  ExceptDoubleParentheses: false   # 嵌套括号例外
+  InCStyleCasts: false             # (int) 内
+  InConditionalStatements: false   # if(...) 内
+  InEmptyParentheses: false        # 空括号 ()
+  Other: false                     # 其余
+SpaceInEmptyBraces: Never          # [v22] 空花括号内空格 {} vs { }：Always / Block(仅代码块) / Never
+SpacesBeforeTrailingComments: 2    # 行尾 // 前至少几个空格（Google 取 2）
+SpacesInLineCommentPrefix:         # 行内注释的 // 后最小/最大空格数
+  Minimum: 1
+  Maximum: -1                      # -1 = 不设上限（保留原样）
+SpacesInContainerLiterals: true    # 容器字面量内部空格（主要影响 ObjC/JS 字典）
+
+
+# -------------------------------------------------------------------------------------
+# §11 空行管理
+# -------------------------------------------------------------------------------------
+MaxEmptyLinesToKeep: 1                 # 最多保留连续空行数（多余的压缩到 1）
+ReflowComments: Always                 # 长注释回流（按 ColumnLimit 重排注释行）：Never / IndentOnly(只调缩进不重排) / Always
+KeepEmptyLines:                        # 三处空行是否保留
+  AtEndOfFile: false                   # 文件末尾
+  AtStartOfBlock: false                # 块 { 后紧跟的空行
+  AtStartOfFile: true                  # 文件开头
+EmptyLineAfterAccessModifier: Never    # public:/private: 后强制空行：Never / Leave / Always
+EmptyLineBeforeAccessModifier: LogicalBlock  # 访问修饰符前空行：Never / Leave / LogicalBlock(与上一成员间已有空行才保留) / Always
+SeparateDefinitionBlocks: Always    # [v14] 函数/类/枚举等定义之间是否强制空行分隔：Leave 保持原样 / Always 强制 / Never 移除（本工程取 Always）
+RemoveEmptyLinesInUnwrappedLines: false    # [v20] 不可折行结构（enum 定义等）内部的空行是否移除
+
+
+# -------------------------------------------------------------------------------------
+# §12 #include 管理
+# -------------------------------------------------------------------------------------
+SortIncludes:                  # include 排序：Enabled 开关 / IgnoreCase 忽略大小写 / IgnoreExtension 忽略 .h 后缀差异
+  Enabled: true
+  IgnoreCase: false
+  IgnoreExtension: false
+IncludeBlocks: Preserve        # 以空行分隔的 include 块：Preserve 原样分组只组内排序（本工程）/ Merge 合并成一块 / Regroup 按类别重新分块
+IncludeCategories:             # 排序分组规则：正则命中者优先级 Priority，数值小者排前；SortPriority 可微调组内顺序
+  - Regex:           '^<ext/.*\.h>'   # 系统扩展头 <ext/...>
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*\.h>'       # C 系统头 <stdio.h> 等（.h 后缀）
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*'           # C++ 标准库 <vector> 等
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '.*'             # 其余（引号包含的相对路径等）
+    Priority:        3
+    SortPriority:    0
+    CaseSensitive:   false
+IncludeIsMainRegex: '([-_](test|unittest))?$'  # 识别“主头文件”的正则（对应 cpp 主实现文件，主头文件优先排最前）；Google 约定把 xx_test.cc 对应的 xx.h 也视为主头
+IncludeIsMainSourceRegex: ''   # 额外识别主源文件名的正则（用于非标准命名工程）
+MainIncludeChar: Quote         # 主头文件的包含形式：Quote( "" ) / AngleBracket( <> ) / Any
+
+CommentPragmas: '^ IWYU pragma:'  # 匹配此正则的注释不参与断行/重排（include-what-you-use 指令等特殊注释）
+SortUsingDeclarations: LexicographicNumeric  # using 别名排序：Never / Lexicographic(按名字) / LexicographicNumeric(按名字+数字感知, 如 v2 < v10)
+
+
+# -------------------------------------------------------------------------------------
+# §13 宏识别（让 clang-format 理解"伪关键字"宏）
+# -------------------------------------------------------------------------------------
+ForEachMacros:            # 视作 for-each 循环的宏（其后括号体按 for 语句排版）
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+IfMacros:                 # 视作 if 语句的宏
+  - KJ_IF_MAYBE
+StatementMacros:          # 整行独立语句的宏（不参与通常的表达式排版）
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
+StatementAttributeLikeMacros:  # 视作属性而非语句开头的宏
+  - Q_EMIT
+AttributeMacros:          # 视作属性注解的宏（[[...]] 等价物，影响其后是否断行/空格）
+  - __capability
+  - absl_nonnull
+  - absl_nullable
+  - absl_nullability_unknown
+MacroBlockBegin: ''       # 正则：匹配到的宏视作"块开始"（如 TEST_F(），其体按块缩进
+MacroBlockEnd: ''         # 正则：对应的块结束宏
+WhitespaceSensitiveMacros:  # 参数内容原样保留、不做格式化/转义的宏（如字符串化宏）
+  - BOOST_PP_STRINGIZE
+  - CF_SWIFT_NAME
+  - NS_SWIFT_NAME
+  - PP_STRINGIZE
+  - STRINGIZE
+SkipMacroDefinitionBody: false  # [v21] #define 宏体是否完全跳过格式化
+
+
+# -------------------------------------------------------------------------------------
+# §14 字面量排版
+# -------------------------------------------------------------------------------------
+IntegerLiteralSeparator:      # 数字字面量千分位分隔符（C++14 单引号）：0=不处理，N=强制/校验 N 位一分组
+  Binary: 0
+  BinaryMinDigitsInsert: 0    # 至少多少位才插入分隔符
+  BinaryMaxDigitsRemove: 0    # 至多多少位时移除分隔符
+  Decimal: 0
+  DecimalMinDigitsInsert: 0
+  DecimalMaxDigitsRemove: 0
+  Hex: 0
+  HexMinDigitsInsert: 0
+  HexMaxDigitsRemove: 0
+  BinaryMinDigits: 0
+  DecimalMinDigits: 0
+  HexMinDigits: 0
+NumericLiteralCase:           # [v22] 字面量大小写规范
+  ExponentLetter: Leave       # 浮点指数 e/E：Leave / Upper / Lower
+  HexDigit: Leave             # 十六进制位 a-f/A-F
+  Prefix: Leave               # 进制前缀 0x/0X
+  Suffix: Leave               # 类型后缀 l/ul/f 等
+
+InsertTrailingCommas: None    # [v16] 多行列表/调用尾逗号：None / Wrapped（JS 生态为主）
+EnumTrailingComma: Leave      # [v21] enum 尾逗号增删：Leave / Insert / Remove（⚠ 有误改风险）
+Cpp11BracedListStyle: AlignFirstComment  # C++11 花括号列表风格：Block(旧式,{}内空格+闭括号换行) / FunctionCall(像函数调用) / AlignFirstComment(=FunctionCall,但首注释后续内容与注释对齐；Google 22 取值)
+
+
+# -------------------------------------------------------------------------------------
+# §15 原始字符串（R"..."）内部语言
+# -------------------------------------------------------------------------------------
+RawStringFormats:             # 原始字符串内嵌其他语言的排版规则：cc/cpp 等 定界符按 Google 风格；TextProto 在 PARSE_* 函数参数中识别
+  - Language: Cpp
+    Delimiters:
+      - cc
+      - CC
+      - cpp
+      - Cpp
+      - CPP
+      - 'c++'
+      - 'C++'
+    CanonicalDelimiter: ''
+    BasedOnStyle: google
+  - Language: TextProto
+    Delimiters:
+      - pb
+      - PB
+      - proto
+      - PROTO
+    EnclosingFunctions:
+      - EqualsProto
+      - EquivToProto
+      - PARSE_PARTIAL_TEXT_PROTO
+      - PARSE_TEST_PROTO
+      - PARSE_TEXT_PROTO
+      - ParseTextOrDie
+      - ParseTextProtoOrDie
+      - ParseTestProto
+      - ParsePartialTestProto
+    CanonicalDelimiter: pb
+    BasedOnStyle: google
+
+
+# -------------------------------------------------------------------------------------
+# §16 惩罚模型（ColumnLimit 内断行时，各断点方案的"代价"分值，越小越倾向选择）
+# -------------------------------------------------------------------------------------
+PenaltyBreakAssignment: 2               # 在 = 处断行的代价（越小越愿意把 = 挪行）
+PenaltyBreakBeforeFirstCallParameter: 1 # 函数调用后第一个实参前断行（f(\n a, b) 形态）的代价；与 PenaltyBreakOpenParenthesis 配合决定"调用整体换行"还是"对齐续行"
+PenaltyBreakBeforeMemberAccess: 150     # 在 . / -> 链式访问处断行的代价（越大越不倾向打断链）
+PenaltyBreakComment: 300                # 在注释处断行的代价
+PenaltyBreakFirstLessLess: 120          # 第一个 << 之后断行（流式输出 ooo<<a<<b）的代价
+PenaltyBreakOpenParenthesis: 0          # 开括号后立即断行的代价
+PenaltyBreakScopeResolution: 500        # 在 :: 处断行的代价
+PenaltyBreakString: 1000                # 字符串字面量内部断行的代价
+PenaltyBreakTemplateDeclaration: 10     # template<...> 声明后断行的代价
+PenaltyExcessCharacter: 1000000         # 超出 ColumnLimit 的每字符惩罚（Google 调大：超宽是重罪，宁可断行）
+PenaltyIndentedWhitespace: 0            # 用"缩进空格"对齐（而非精确列对齐）的惩罚
+PenaltyReturnTypeOnItsOwnLine: 200      # 返回类型单独成行的代价
+
+
+# -------------------------------------------------------------------------------------
+# §17 其他语言参数（虽位于 Cpp 段，但服务于 ObjC/Java/JS/JSON/TableGen/Verilog 等语言特性）
+# -------------------------------------------------------------------------------------
+# —— ObjC ——
+ObjCBinPackProtocolList: Never        # 协议列表装箱：Never 每行一个 / Auto / Always
+ObjCBlockIndentWidth: 2               # ObjC block 缩进
+ObjCBreakBeforeNestedBlockParam: true # 嵌套 block 参数前断行
+ObjCSpaceAfterProperty: false         # @property 后空格
+ObjCSpaceBeforeProtocolList: true     # 协议列表前空格
+# —— Java ——
+BreakAfterJavaFieldAnnotations: false # Java 字段注解后断行
+SortJavaStaticImport: Before          # Java static import 相对普通 import 的位置：Before / After
+# —— JavaScript ——
+JavaScriptQuotes: Leave               # JS 引号风格：Leave / Single / Double
+JavaScriptWrapImports: true           # JS import/export 语句超宽是否折行
+# —— JSON ——
+BreakArrays: true                     # JSON 数组超宽折行
+SpaceBeforeJsonColon: false           # JSON 键值冒号前空格
+# —— TableGen / Verilog ——
+TableGenBreakInsideDAGArg: DontBreak  # TableGen DAG 参数内部断行：DontBreak / BreakAll / BreakElements
+VerilogBreakBetweenInstancePorts: true  # Verilog 实例端口间是否断行
