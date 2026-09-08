@@ -1,34 +1,32 @@
-#include <vector>
 #include <iostream>
-#include <queue>
 #include <optional>
+#include <queue>
 #include <string>
+#include <vector>
 
-//using namespace std;
+
+// using namespace std;
 
 class TreeNode {
 public:
     int val;
-    TreeNode *left;
-    TreeNode *right;
+    TreeNode* left;
+    TreeNode* right;
 
-    TreeNode() : val(0), left(nullptr), right(nullptr) {
-    }
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
 
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {
-    }
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 
-    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {
-    }
+    TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
 
-    static TreeNode *createRoot(const std::vector<std::optional<int> > &values) {
+    static TreeNode* createRoot(const std::vector<std::optional<int>>& values) {
         if (values.empty() || !values[0].has_value()) return nullptr;
-        TreeNode *root = new TreeNode(values[0].value());
-        std::queue<TreeNode *> nodeQueue;
+        TreeNode* root = new TreeNode(values[0].value());
+        std::queue<TreeNode*> nodeQueue;
         nodeQueue.push(root);
         size_t i = 1;
         while (i < values.size()) {
-            TreeNode *current = nodeQueue.front();
+            TreeNode* current = nodeQueue.front();
             nodeQueue.pop();
             if (i < values.size() && values[i].has_value()) {
                 current->left = new TreeNode(values[i].value());
@@ -44,7 +42,7 @@ public:
         return root;
     }
 
-    static void freeTree(TreeNode *root) {
+    static void freeTree(TreeNode* root) {
         if (!root) return;
         freeTree(root->left);
         freeTree(root->right);
@@ -52,15 +50,15 @@ public:
     }
 
     // 打印整棵二叉树
-    static void print(TreeNode *root) {
+    static void print(TreeNode* root) {
         int h = getHeight(root);
         int rows = h * 2 - 1;
-        int cols = (1 << h) - 1; // 2^h - 1
+        int cols = (1 << h) - 1;  // 2^h - 1
         std::vector<std::vector<char>> mat(rows, std::vector<char>(cols, ' '));
 
         fillTree(root, 0, 0, cols - 1, h, mat);
 
-        for (const auto &row : mat) {
+        for (const auto& row : mat) {
             for (char ch : row) {
                 std::cout << ch;
             }
@@ -70,7 +68,7 @@ public:
 
 private:
     // 计算树的高度，改为静态方法
-    static int getHeight(TreeNode *node) {
+    static int getHeight(TreeNode* node) {
         if (!node) return 0;
         return std::max(getHeight(node->left), getHeight(node->right)) + 1;
     }
@@ -79,7 +77,8 @@ private:
     // level: 当前节点所在的层（根层为 0）
     // left, right: 当前区域左右边界
     // totalHeight: 树的总高度
-    static void fillTree(TreeNode *node, int level, int left, int right, int totalHeight, std::vector<std::vector<char> > &mat) {
+    static void fillTree(TreeNode* node, int level, int left, int right, int totalHeight,
+                         std::vector<std::vector<char>>& mat) {
         if (!node) return;
         int mid = (left + right) / 2;
         std::string valStr = std::to_string(node->val);
