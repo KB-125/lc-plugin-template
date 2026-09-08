@@ -1,8 +1,55 @@
-BasedOnStyle: Google  // Google风格
-BreakBeforeBraces: Attach // 大括号不换行
-AllowShortIfStatementsOnASingleLine: true  // 单行if不换行
-ColumnLimit: 120  // 列宽
-IndentWidth: 4  // 缩进长度
-PointerAlignment: Left // 指针`*`左对齐
-SortIncludes: false // 不对include排序
-IndentCaseLabels: true // case缩进
+# ============================================================
+#  LeetCode C++ 刷题工程格式化配置
+#  基于 Google 风格，按现代 C++ 编码标准调整
+#
+#  注意：本文件是 YAML 格式，注释必须用 "#"；
+#  不能用 "//"（会被当作值的一部分导致 Unknown value / invalid argument）
+# ============================================================
+
+# ---- 基础 ----
+Language: Cpp
+BasedOnStyle: Google
+Standard: c++20
+
+# ---- 缩进与列宽 ----
+ColumnLimit: 120             # 列宽（Google 默认 80）
+IndentWidth: 4               # 缩进长度（Google 默认 2）
+TabWidth: 4
+UseTab: Never
+AccessModifierOffset: -4     # public:/private: 反缩进到类边界
+
+# ---- 大括号与换行 ----
+BreakBeforeBraces: Attach    # 大括号不换行（K&R 风格）
+AllowShortIfStatementsOnASingleLine: WithoutElse  # 单行 if 不换行（带 else 的不合并）
+AllowShortLoopsOnASingleLine: true                 # 单行循环体不换行
+AllowShortFunctionsOnASingleLine: Inline           # 类内函数可单行，类外展开
+AllowShortLambdasOnASingleLine: Inline             # 空的/内联 lambda 可单行
+AllowShortCaseLabelsOnASingleLine: true            # 单行 case
+AllowShortBlocksOnASingleLine: Empty               # 仅空代码块可单行 {}
+IndentCaseLabels: true       # switch 内 case 缩进（Google 默认不缩进）
+IndentCaseBlocks: false      # case 体不再额外缩进一层
+NamespaceIndentation: None   # 命名空间内容不缩进
+FixNamespaceComments: true   # 自动补齐 namespace 结尾注释
+CompactNamespaces: false
+InsertBraces: false          # 如需强制单行控制体加大括号请置 true，
+                             # 但必须同时关闭上面的 AllowShortIfStatementsOnASingleLine（二者互斥）
+
+# ---- 指针与对齐 ----
+PointerAlignment: Left       # 指针/引用 * & 靠左（int* p）
+DerivePointerAlignment: false  # 必须关闭，否则会从文件内容猜测、覆盖上面的设置
+AlignAfterOpenBracket: Align # 换行参数与开括号对齐
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: true  # 尾注释对齐
+
+# ---- include 与定义 ----
+SortIncludes: CaseSensitive  # 现代标准推荐排序；如不想排序可改回 Never
+IncludeBlocks: Preserve      # 不合并/重排以空行分块的 include
+SeparateDefinitionBlocks: Always   # 函数/类定义之间保留空行
+
+# ---- 杂项 ----
+MaxEmptyLinesToKeep: 1
+ReflowComments: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
