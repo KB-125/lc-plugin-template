@@ -1,12 +1,12 @@
 /*
- * @lc app=leetcode.cn id=940 lang=cpp
+ * @lc app=leetcode.cn id=1621 lang=cpp
  * @lcpr version=30404
  *
- * [940] 不同的子序列 II
+ * [1621] 大小为 K 的不重叠线段的数目
  */
 
 /*
- * [977] 不同的子序列 II
+ * [1725] 大小为 K 的不重叠线段的数目
  */
 #include <iostream>
 #include <vector>
@@ -19,7 +19,7 @@ using namespace std;
 // @lc code=start
 class Solution {
 public:
-    int distinctSubseqII(string s) {
+    int numberOfSets(int n, int k) {
         //TODO:
     }
 };
@@ -34,15 +34,15 @@ int main() {
 
 /*
 // @lcpr case=start
-// "abc"\n
+// 4\n2\n
 // @lcpr case=end
 
 // @lcpr case=start
-// "aba"\n
+// 3\n1\n
 // @lcpr case=end
 
 // @lcpr case=start
-// "aaa"\n
+// 30\n7\n
 // @lcpr case=end
 
  */

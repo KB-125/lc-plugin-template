@@ -1,12 +1,12 @@
 /*
- * @lc app=leetcode.cn id=940 lang=cpp
+ * @lc app=leetcode.cn id=2472 lang=cpp
  * @lcpr version=30404
  *
- * [940] 不同的子序列 II
+ * [2472] 不重叠回文子字符串的最大数目
  */
 
 /*
- * [977] 不同的子序列 II
+ * [2559] 不重叠回文子字符串的最大数目
  */
 #include <iostream>
 #include <vector>
@@ -19,7 +19,7 @@ using namespace std;
 // @lc code=start
 class Solution {
 public:
-    int distinctSubseqII(string s) {
+    int maxPalindromes(string s, int k) {
         //TODO:
     }
 };
@@ -34,15 +34,11 @@ int main() {
 
 /*
 // @lcpr case=start
-// "abc"\n
+// "abaccdbbd"\n3\n
 // @lcpr case=end
 
 // @lcpr case=start
-// "aba"\n
-// @lcpr case=end
-
-// @lcpr case=start
-// "aaa"\n
+// "adbcda"\n2\n
 // @lcpr case=end
 
  */
